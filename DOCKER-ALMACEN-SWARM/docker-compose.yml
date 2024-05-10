@@ -1,0 +1,40 @@
+networks:
+   cluster_almacerei_default:
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      - "32000:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=almacen
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+  usuarios:
+    image: sebasbelmos/usuarios_almacen
+    ports:
+      - "3001:3001"
+    links:
+      - db
+  productos:
+    image: sebasbelmos/productos_almacen
+    ports:
+      - "3002:3002"
+    links:
+      - db
+  ordenes:
+    image: sebasbelmos/ordenes_almacen
+    ports:
+      - "3003:3003"
+    links:
+      - db
+      - usuarios
+      - productos
+  web:
+    image: sebasbelmos/web_almacen
+    ports:
+      - "8080:80"
+    links:
+      - usuarios
+      - productos
+      - ordenes
